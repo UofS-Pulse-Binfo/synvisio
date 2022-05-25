@@ -41,6 +41,8 @@ class MultiGenomeFilter extends Component {
             filterMultiGenomeData(allMarkers, plotType);
         }
 
+
+
     }
 
 

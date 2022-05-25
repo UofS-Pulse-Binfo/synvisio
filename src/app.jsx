@@ -2,31 +2,40 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, hashHistory } from 'react-router';
-import { Dashboard } from './pages';
+import {
+  NotFound, Dashboard, LinkageMap,
+  PyadhoreProcessor, MultiGenome, MultiHive
+} from './pages';
 import { Container } from './components';
 import configureStore from './redux/store/configureStore';
 import { Provider } from 'react-redux';
 
-// Load the Data gff file and syteny collinearity file 
-// Parse the Data and store it in appropriate data structures 
-// Filter it for useful information and mine it to decide on what to represent 
-// Create the plots 
-// Refine the plots 
-// Add interactivity to the plots 
+// Load the Data gff file and syteny collinearity file
+// Parse the Data and store it in appropriate data structures
+// Filter it for useful information and mine it to decide on what to represent
+// Create the plots
+// Refine the plots
+// Add interactivity to the plots
 
 //Root sass file for webpack to compile
 import './sass/main.scss';
-//Initial Default settings 
+//Initial Default settings
 const store = configureStore();
 
 class App extends Component {
 
   render() {
+
     return (
       <Provider store={store}>
         <Router history={hashHistory}>
           <Route path='/(:sourceID)' component={Container}>
             <IndexRoute component={Dashboard} />
+            <Route path='pyadhore-processor' component={PyadhoreProcessor} />
+            <Route path='multi-genome(/:sourceID)' component={MultiGenome} />
+            <Route path='multi-hive(/:sourceID)' component={MultiHive} />
+            <Route path='linkage-map(/:sourceID)' component={LinkageMap} />
+            <Route path='*' component={NotFound} />
           </Route>
         </Router>
       </Provider>
@@ -35,4 +44,3 @@ class App extends Component {
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
-

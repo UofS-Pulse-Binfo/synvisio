@@ -52,7 +52,7 @@ class Dashboard extends Component {
     }
 
     componentWillUnmount() {
-        // clear alignment list 
+        // clear alignment list
         this.props.actions.setALignmentList([]);
     }
 
@@ -61,6 +61,8 @@ class Dashboard extends Component {
             isModalVisible, multiLevel,
             multiLevelType, plotType } = this.props;
 
+        // transfer the colormap from genome to configuration
+        configuration['colorMap'] = genome.colorMap || {};
 
         return (
             <div className='dashboard-root m-t'>
@@ -123,5 +125,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
-
-

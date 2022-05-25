@@ -5,6 +5,7 @@ import AxisLines from '../DotView/AxisLines';
 import AlignmentLines from '../DotView/AlignmentLines';
 import CubeFilterPanel from './CubeFilterPanel';
 import AxisLineLabel from '../DotView/AxisLineLabel';
+import AdvancedFilterPanel from '../AdvancedFilterPanel';
 
 class DotView extends Component {
 
@@ -56,9 +57,10 @@ class DotView extends Component {
         return positions;
     }
 
-    initialiseLines(alignmentList, axisLinePositions, chromosomeCollection) {
+    initialiseLines(alignmentList, axisLinePositions, chromosomeCollection, alignmentColor) {
 
-        const { genomeLibrary } = window.synVisio, linkList = [];
+        const { genomeLibrary } = window.synVisio, linkList = [],
+            isColorByOrientation = alignmentColor == 'orientation';
 
         _.map(alignmentList, (alignment) => {
             if (!alignment.hidden) {
@@ -79,6 +81,7 @@ class DotView extends Component {
                     'x2': last_link_x,
                     'y1': first_link_y,
                     'y2': last_link_y,
+                    'isFlipped': isColorByOrientation ? alignment.type == 'flipped' : false,
                     alignment
                 });
             }
@@ -91,7 +94,7 @@ class DotView extends Component {
 
         let { configuration, genomeData, isDark, chromosomeMap } = this.props,
             { alignmentList } = configuration;
-        const side_margin = 57.5;
+        const side_margin = 75;
 
         configuration = {
             ...configuration,
@@ -111,8 +114,8 @@ class DotView extends Component {
 
             [[0, 1], [1, 2], [2, 0]].map((iterator, index) => {
 
-                axisLinePositions[iterator[0] + ',' + iterator[1]] = this.initialisePostions({ sourceMarkers: configuration.markers[iterator[0]], targetMarkers: configuration.markers[iterator[1]], innerWidth: configuration.dotView.innerWidth, offset: configuration.dotView.offset }, genomeData.chromosomeMap);
-                alignmentLinePositions[iterator[0] + ',' + iterator[1]] = this.initialiseLines(alignmentList[index].alignmentList, axisLinePositions[iterator[0] + ',' + iterator[1]], genomeData.chromosomeMap);
+                axisLinePositions[iterator[0] + ',' + iterator[1]] = this.initialisePostions({ sourceMarkers: configuration.markers[iterator[0]], targetMarkers: configuration.markers[iterator[1]], innerWidth: configuration.dotView.innerWidth, offset: configuration.dotView.offset }, genomeData.chromosomeMap, configuration.alignmentColor);
+                alignmentLinePositions[iterator[0] + ',' + iterator[1]] = this.initialiseLines(alignmentList[index].alignmentList, axisLinePositions[iterator[0] + ',' + iterator[1]], genomeData.chromosomeMap, configuration.alignmentColor);
 
             });
 
@@ -123,9 +126,10 @@ class DotView extends Component {
         return (
             <div className='hiveView-root text-xs-center'>
                 <CubeFilterPanel configuration={configuration} chromosomeMap={chromosomeMap} />
+                <AdvancedFilterPanel width={configuration.dotView.width} />
                 {alignmentList.length > 0 &&
                     <div className={'dotViewWrapper only-dotview'}>
-                        <div className='dotViewRoot threeDcube'>
+                        <div className={'dotViewRoot threeDcube ' + (isDark ? 'dark' : 'light')}>
                             <svg
                                 style={{ 'background': isDark ? '#252830' : 'white' }}
                                 className={'dotViewSVG exportable-svg snapshot-thumbnail '}
@@ -192,7 +196,7 @@ class DotView extends Component {
                                 </g>
 
                                 {/* Z axis Labels */}
-                                <g style={{ 'transform': 'translate(60%, 4.5%) rotate(157.5deg) scale(1.08)' }}>
+                                <g style={{ 'transform': 'translate(60%, 6%) rotate(157.5deg) scale(1.08)' }}>
                                     {_.map(axisLinePositions['2,0'].source.map((d, i) => {
                                         return <AxisLineLabel className={'special-markers marker-x-lines-text dot-plot-markers marker-x-lines-text-' + d.key}
                                             key={"vertical-line-text-outer-" + d.key}
